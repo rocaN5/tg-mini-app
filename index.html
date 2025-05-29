@@ -1,34 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Мини-приложение Димана</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Сканнер с камеры</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     body {
-      background: var(--tg-theme-bg-color);
-      color: var(--tg-theme-text-color);
       font-family: sans-serif;
-      padding: 20px;
+      text-align: center;
+      padding: 30px;
+      background: #f3f3f3;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      background: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+      display: inline-block;
     }
   </style>
 </head>
 <body>
-  <h1>Привет, Telegram!</h1>
-  <button onclick="sendData()">Отправить данные</button>
+  <h1>Сканнер QR и штрихкодов с камеры</h1>
+  <div id="reader"></div>
+  <div id="result">Ожидаю сканирование...</div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand(); // расширить окно
+    const resultContainer = document.getElementById('result');
 
-    function sendData() {
-      tg.sendData("Привет от мини-приложения!");
-      tg.close(); // закрыть окно
+    function onScanSuccess(decodedText, decodedResult) {
+      resultContainer.innerText = `✅ Сканировано: ${decodedText}`;
+      console.log(decodedResult);
+      // Можно остановить сканер, если нужно:
+      // html5QrcodeScanner.clear();
     }
+
+    function onScanFailure(error) {
+      // Можно скрыть или логировать ошибки
+      console.warn(`Ошибка сканирования: ${error}`);
+    }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+      fps: 10,
+      qrbox: 250
+    });
+
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
   </script>
 </body>
 </html>
